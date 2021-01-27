@@ -1,5 +1,5 @@
 # Porsche-997-and-987-Gauge-Cluster-Operator
-This code is designed to be used with the Macchina M2 (Arduino Due based).  It uses OBD PID requests to run the gauge cluster in the Porsche.  Tested with GM 6.2L LT1 swapped Porche 997.
+This code is designed to be used with the Macchina M2 (Arduino Due based).  It uses OBD PID requests to run the gauge cluster in the Porsche through the CANbus.  Tested with GM 6.2L LT1 swapped Porche 997.
 
 Additional functions exist within the code.  The car it was used with was a Tiptronic, converted to manual.  A section of code is added to use an input on the M2 as a switch that sends CAN to the dash to light up "R" and to turn on the reverse lights
 
