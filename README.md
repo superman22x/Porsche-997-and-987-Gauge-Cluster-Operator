@@ -10,3 +10,5 @@ A replicated TOS signal is ouput using PWM signals.  This will need to be scaled
 Partial AC functions are added.  This code reads the bit that the 997 sends to turn on the AC.  Nothing is done with that at this point.  This portion is untested
 
 A simple Radiator fan algo is added.  It sends a CANbus request as coolant exceeds 90C (194F).  From there it ramps up fan speed until coolant reaches 110C where it puts the fans on max.  Be careful if you mess with this, the same byte has a bit for "Engine running."
+
+I'm sorry for sloppy coding.  This is my second Arduino project I've done.
