@@ -108,6 +108,7 @@ void processPID(CAN_FRAME &frame)
       Coolant = frame.data.bytes[3] - 40;
       SerialUSB.print("Coolant temperature (C): ");
       SerialUSB.println(Coolant);
+      Coolant = Coolant*0.75+93     //Rescales it for the Porsche usage
       break;
    case 0x5C:
       OilTemp = frame.data.bytes[3] -40; //
