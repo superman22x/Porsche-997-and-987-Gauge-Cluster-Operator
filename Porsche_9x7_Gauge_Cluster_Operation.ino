@@ -108,7 +108,7 @@ void processPID(CAN_FRAME &frame)
       Coolant = frame.data.bytes[3] - 40;
       SerialUSB.print("Coolant temperature (C): ");
       SerialUSB.println(Coolant);
-      Coolant = Coolant*0.75+93     //Rescales it for the Porsche usage
+      Coolant = Coolant*1.35 + 75    //Rescales it for the Porsche usage.  There is a huge dead zone between 175 and 200+ where the Porsche gauge reads 200.  This slightly over estimates temp.
       break;
    case 0x5C:
       OilTemp = frame.data.bytes[3] -40; //
@@ -258,7 +258,8 @@ uint32_t Temp_Load = M2IO.Load_Amps();
 
 VSS = Spd*6.46;
 if (VSS <= 0.5 && (VSS_Stat == true)) {
-  M2IO.Setpin_12VIO(2, OFF);
+  //M2IO.Setpin_12VIO(2, OFF);
+	M2IO.Change_Duty_12VIO(2, 1)       //Turning this pin off is causing 500ms delays in the rest of the program, which sets fault messages
   VSS_Stat = false;                        //If VSS is off, set this false so we do not fall in this loop every time
 }
 else if (VSS > 0.5){
@@ -536,8 +537,11 @@ if (Can1.available() > 0) {
   Can1.read(incoming);
   if (incoming.id == 0x24A) {         //This frame comes from the PSM - ABS wheel speed sensors.  Used one of the rear wheel sensors.  Used as replicated TOS earlier in sketch.  0.02kph/bit
     //printFrame(incoming);
-    SpdH=incoming.data.bytes[0];
-    SpdL=incoming.data.bytes[1];
+    SpdH=incoming.data.bytes[4];
+    SpdL=incoming.data.bytes[5];                //Rear tire used - This way it's true to transmission output speed
+	Spd=((SpdL<<8) | SpdH);                //Combines the upper and lower byte into a singal uint16 (2byte) variable
+	Spd = Spd*0.02;                        //Convert from Porsche Scaling - Used earlier in the sketch to create a replicated TOS signal
+	VSS = Spd*1.03                        //Play with this number.  Use the Torque app, or whatever, depending what your ECU is expecting, you may need to change this.  You want the ECM speed to match the porsche speed
     }
     if (incoming.id == 0x600) {         //This frame is used for AC status
     //printFrame(incoming);
@@ -546,8 +550,7 @@ if (Can1.available() > 0) {
 }
 AC =  bitRead(AC_Req,3);               //Checks if the Porsche HVAC is requesting AC ON
 
-Spd=((SpdH<<8) | SpdL);                //Combines the upper and lower byte into a singal uint16 (2byte) variable
-Spd = Spd*0.02;                        //Convert from Porsche Scaling - Used earlier in the sketch to create a replicated TOS signal
+
 
 
 //-----------------------------------------------------CAN Frame Sending Timers ---------------------------------------------------------------------
